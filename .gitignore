@@ -1,0 +1,17 @@
+# Ortam değişkenleri (Güvenlik)
+.env
+*.env
+!.env.example
+
+# Visual Studio & IDE dosyaları
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+.idea/
+
+# .NET Build çıktıları
+[Bb]in/
+[Oo]bj/
+TestResults/

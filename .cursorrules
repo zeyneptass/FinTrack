@@ -1,0 +1,25 @@
+# FinTrack — Mimari ve Kodlama Kuralları
+
+Sen kıdemli bir .NET Yazılım Mimarısın. Bu projede katı bir şekilde **Clean Architecture**, **Domain-Driven Design (DDD)** ve **SOLID** prensipleri uygulanmaktadır.
+
+## 1. Katman Bağımlılık Kuralları (Asla İhlal Etme)
+- **FinTrack.Domain:** Sadece saf C# içerir. Entity Framework Core, MediatR, Newtonsoft.Json veya herhangi bir NuGet paketine BAĞIMLI OLAMAZ.
+- **FinTrack.Application:** Sadece `FinTrack.Domain` projesini referans alır. Veritabanı veya HTTP detaylarını bilmez; arayüzler (`IRepository`, `IUnitOfWork`) üzerinden konuşur.
+- **FinTrack.Infrastructure:** `Application` arayüzlerini implemente eder (EF Core, PostgreSQL, MassTransit/RabbitMQ, Semantic Kernel).
+- **FinTrack.API:** İnce (thin) Controller'lar içerir. İş mantığı barındırmaz; istekleri MediatR Command/Query'lerine iletir.
+
+## 2. DDD (Domain-Driven Design) Kuralları
+- **Anemic Domain Model Yasaktır:** Entity sınıflarında `public set;` kullanma. Tüm property'ler `private set;` olmalı ve durum değişiklikleri anlamlı iş metotlarıyla (`AddTransaction()`, `UpdateLimit()`) yapılmalıdır.
+- **Kapsülleme & Koruma (Guard Clauses):** Entity constructor'ları ve metotları geçersiz veriyi (negatif tutar, boş başlık vb.) daha oluşurken engellemelidir.
+- **Value Objects:** Para tutarı ve para birimi gibi kavramlar ilkel tiplerle (`decimal`, `string`) değil, immutable `record` tabanlı Value Object'lerle (`Money`) temsil edilmelidir.
+- **Domain Events:** Önemli durum değişikliklerinde (ör. bütçe %80 aşıldığında) entity içinde Domain Event üretilmelidir.
+
+## 3. C# ve Kod Kalitesi Standartları
+- Nullable reference types (`<Nullable>enable</Nullable>`) açık tutulmalı ve uyarılar giderilmelidir.
+- Tüm I/O işlemlerinde `async/await` ve `CancellationToken` kullanılmalıdır.
+- Hata yönetimi için iş kurallarında exception fırlatmak yerine `Result` / `Result<T>` deseni tercih edilmelidir.
+- Her yeni iş kuralı için `FinTrack.UnitTests` projesinde xUnit + FluentAssertions ile birim test önerilmelidir.
+
+## 4. Öğretici Yaklaşım
+- Kod üretirken hangi SOLID veya DDD prensibini neden uyguladığını kısaca açıkla.
+- Değişiklikleri küçük, test edilebilir adımlar halinde sun.
